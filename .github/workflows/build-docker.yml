@@ -1,4 +1,4 @@
-name: Build and Dockerize
+name: Maven Hello World
 
 # listener- listen to push to main branch
 on:
@@ -17,12 +17,12 @@ jobs:
       ARTIFACT_ID: myapp
 
     steps:
-      - name: Checkout repository
+      - name: Checkout Repository with Tags
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Setup Java
+      - name: Setup Java on Runner
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
@@ -42,18 +42,18 @@ jobs:
           NEW_VERSION="$MAJOR.$MINOR.$PATCH"
           echo "New version: $NEW_VERSION"
 
-          # Update pom.xml to new SNAPSHOT
+          # Update pom.xml to new version
           mvn versions:set -DnewVersion=$NEW_VERSION -DgenerateBackupPoms=false
 
           echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
 
-      - name: Commit pom.xml with new SNAPSHOT
+      - name: Commit pom.xml with new version
         working-directory: myapp
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add pom.xml
-          git commit -m "Bump version to ${{ steps.version.outputs.new_version }}-SNAPSHOT" || echo "No changes to commit"
+          git commit -m "Bump version to ${{ steps.version.outputs.new_version }}" || echo "No changes to commit"
           git push
 
       - name: Build Maven JAR
