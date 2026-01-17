@@ -60,6 +60,7 @@ jobs:
         working-directory: myapp
         run: |
           mvn clean package
+          test -f target/myapp-${{ steps.version.outputs.new_version }}.jar
 
       - name: Build Docker image
         run: |
@@ -82,4 +83,4 @@ jobs:
 
       - name: Run Docker image
         run: |
-          docker run --rm ${{ secrets.DOCKER_USERNAME }}/${{ env.ARTIFACT_ID }}:${{ steps.version.outputs.new_version }}
+          docker run --rm ${{ secrets.DOCKER_USERNAME }}/${{ env.ARTIFACT_ID }}:${{ steps.version.outputs.new_version }} | grep "Hello World, Yaara!"
